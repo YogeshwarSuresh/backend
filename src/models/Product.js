@@ -6,10 +6,12 @@ const productSchema = new mongoose.Schema({
   price: {type: Number, required: true},
   category: {type: String, required: true},
   company: {type: mongoose.Schema.Types.ObjectId, ref: 'Company'},
+  imageUrl: {type: String},
+  isDeleted: {type: Boolean, default: false},
 }, {
   timestamps: true,
 });
 
-const Product = mongoose.model('Product', productSchema);
 
-module.exports = Product;
+
+module.exports = mongoose.models.Product  || mongoose.model('Product', productSchema);

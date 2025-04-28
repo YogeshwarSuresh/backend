@@ -11,5 +11,4 @@ const priceSchema = new mongoose.Schema({
   timestamps: true,
 });
 
-const Price = mongoose.model('Price', priceSchema);
-module.exports = Price;
+module.exports= mongoose.models.Price || mongoose.model('Price', priceSchema);

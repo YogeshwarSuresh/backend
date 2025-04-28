@@ -9,9 +9,9 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const user = await userService.register(req.body);
-    return {data: user};
+    res.send({data: user});
   } catch (error) {
-    return {error: error};
+    res.send({error: error.message});
   }
 });
 
@@ -37,6 +37,36 @@ router.get('/profile', authMiddleware, async (req, res) => {
   }
 });
 
+// Get all users (Protected - Admin Only)
+router.get('/all', authMiddleware, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).send({error: 'Access denied. Admin privileges required.'});
+    }
+
+    const users = await userService.find();
+    res.send({data: users});
+  } catch (error) {
+    res.send({error: error.message});
+  }
+});
+
+// Get user count (Protected - Admin Only)
+router.get('/count', authMiddleware, async (req, res) => {
+  try {
+    // Check if user is admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).send({error: 'Access denied. Admin privileges required.'});
+    }
+
+    const count = await userService.getUserCount();
+    res.send({data: { count }});
+  } catch (error) {
+    res.send({error: error.message});
+  }
+});
+
 // Update user profile (Protected)
 router.put('/profile', authMiddleware, async (req, res) => {
   try {
@@ -45,7 +75,6 @@ router.put('/profile', authMiddleware, async (req, res) => {
     res.send({data: user});
   } catch (error) {
     res.send({error: error.message});
-    ;
   }
 });
 
@@ -53,9 +82,9 @@ router.put('/profile', authMiddleware, async (req, res) => {
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const message = await userService.deleteUser(req.params.id);
-    return {data: message};
+    res.send({data: message});
   } catch (error) {
-    return {error: error};
+    res.send({error: error.message});
   }
 });
 
