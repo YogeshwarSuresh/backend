@@ -47,7 +47,7 @@ const router = express.Router();
 router.use('/images', express.static(path.join(__dirname, '../../uploads/products')));
 
 // Create new product with image upload
-router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     // If role validation is needed
     if (req.user.role !== "admin") {
@@ -58,13 +58,8 @@ router.post('/', authMiddleware, upload.single('image'), async (req, res) => {
       return res.status(403).send({error: 'You do not have permission to perform this action'});
     }
 
-    // Add image path to product data if file was uploaded
-    const productData = req.body;
-    if (req.file) {
-      productData.imagePath = `/product/images/${req.file.filename}`;
-    }
 
-    const product = await productService.createProduct(productData);
+    const product = await productService.createProduct(req.body);
     res.status(201).send({data: product});
   } catch (error) {
     // If file was uploaded but product creation failed, delete file
